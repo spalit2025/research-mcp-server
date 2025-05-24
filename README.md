@@ -106,10 +106,14 @@ print(result)
 ```
 
 ### Development Setup
-For development work, install additional tools:
+The main development tool you'll need is the MCP Inspector for testing:
 
 ```bash
-pip install -r requirements-dev.txt
+# Install MCP Inspector globally
+npm install -g @modelcontextprotocol/inspector
+
+# Or use npx to run it directly
+npx @modelcontextprotocol/inspector python research_server.py
 ```
 
 ## 🏗️ Project Structure
@@ -205,10 +209,13 @@ python research_server.py --help
 - **[arxiv](https://github.com/lukasschwab/arxiv.py)** >=2.1.0 - arXiv API client for paper search and retrieval
 - **[mcp](https://github.com/modelcontextprotocol/python-sdk)** >=1.0.0 - Model Context Protocol server implementation
 
-### Development
-- **[pytest](https://pytest.org/)** - Testing framework
-- **[black](https://black.readthedocs.io/)** - Code formatting
-- **[flake8](https://flake8.pycqa.org/)** - Code linting
+### Development & Testing
+- **[MCP Inspector](https://modelcontextprotocol.io/docs/tools/inspector)** - Web-based tool for testing MCP servers
+  ```bash
+  npx @modelcontextprotocol/inspector python research_server.py
+  ```
+
+*Note: Additional development tools like pytest, black, and flake8 are listed in requirements-dev.txt but not currently configured for this project.*
 
 ## 📄 License
 
@@ -226,7 +233,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Development Guidelines
 - Follow PEP 8 style guidelines
-- Add tests for new functionality
+- Test your changes with MCP Inspector
 - Update documentation for any changes
 - Ensure MCP compatibility is maintained
 
