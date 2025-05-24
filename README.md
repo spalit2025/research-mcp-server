@@ -6,6 +6,8 @@ A powerful Model Context Protocol (MCP) server that provides academic research c
 
 - 🔍 **Paper Search** - Search arXiv by topic, author, or keywords with customizable result limits
 - 📄 **Paper Analysis** - Extract detailed information from specific research papers
+- 📚 **Resource Access** - Browse available topics and access organized paper collections
+- 🎯 **Smart Prompts** - Generate structured research prompts for comprehensive analysis
 - 🚀 **MCP Compatible** - Full Model Context Protocol implementation for seamless AI integration
 - ⚡ **Fast & Reliable** - Efficient arXiv API integration with robust error handling
 - 🛠️ **Easy Integration** - Simple setup for use with MCP clients and AI assistants
@@ -83,6 +85,48 @@ Extract detailed information from a specific paper.
 }
 ```
 
+### Available Resources
+
+#### 📚 papers://folders
+Lists all available topic folders with papers stored locally.
+
+**Returns:** Markdown-formatted list of available research topics
+
+**Usage:** Access this resource to see what topics have been previously searched and have papers available.
+
+#### 📖 papers://{topic}
+Get detailed information about all papers for a specific topic.
+
+**Parameters:**
+- `topic` (string): The research topic to retrieve papers for
+
+**Returns:** Comprehensive markdown document with paper details including titles, authors, summaries, and PDF links
+
+**Example:** `papers://machine_learning` or `papers://quantum_computing`
+
+### Available Prompts
+
+#### 🎯 generate_search_prompt
+Generate a structured prompt for comprehensive academic research on a specific topic.
+
+**Parameters:**
+- `topic` (string): The research topic to generate a prompt for
+- `num_papers` (integer, optional): Number of papers to search for (default: 5)
+
+**Returns:** Detailed prompt that guides systematic research including:
+- Paper search instructions
+- Information extraction guidelines
+- Analysis and synthesis requirements
+- Structured output formatting
+
+**Example:**
+```json
+{
+  "topic": "neural networks",
+  "num_papers": 8
+}
+```
+
 ## 🧪 Development & Testing
 
 ### Test with MCP Inspector
@@ -133,8 +177,10 @@ research-mcp-server/
 1. **MCP Server** - Implements the Model Context Protocol for tool communication
 2. **arXiv Integration** - Uses the arXiv API to search and retrieve academic papers
 3. **Tool Registration** - Exposes `search_papers` and `extract_info` as MCP tools
-4. **Data Processing** - Formats and structures paper information for AI consumption
-5. **Error Handling** - Robust error management for network and API issues
+4. **Resource Management** - Provides organized access to paper collections via resources
+5. **Prompt Generation** - Creates structured research prompts for systematic analysis
+6. **Data Processing** - Formats and structures paper information for AI consumption
+7. **Error Handling** - Robust error management for network and API issues
 
 ## 🛠️ Configuration
 
@@ -198,7 +244,9 @@ python research_server.py --help
 4. Test with MCP Inspector
 
 ### Code Structure
-- **Tool Functions** - Implement the actual research functionality
+- **Tool Functions** - Implement the actual research functionality (`search_papers`, `extract_info`)
+- **Resource Functions** - Provide organized access to stored paper data (`get_available_folders`, `get_topic_papers`)
+- **Prompt Functions** - Generate structured research prompts (`generate_search_prompt`)
 - **MCP Integration** - Handle protocol communication and tool registration
 - **Error Handling** - Manage API errors and edge cases
 - **Data Formatting** - Structure responses for optimal AI consumption
