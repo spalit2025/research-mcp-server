@@ -1,0 +1,8 @@
+# Development dependencies
+# Note: MCP Inspector is a Node.js tool, install with:
+# npx @modelcontextprotocol/inspector
+
+# Python development tools (if needed)
+pytest>=7.0.0
+black>=22.0.0
+flake8>=4.0.0 
