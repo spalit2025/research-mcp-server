@@ -1,28 +1,29 @@
-# 🔬 Research MCP Server
+# Research MCP Server
 
 A powerful Model Context Protocol (MCP) server that provides academic research capabilities through arXiv integration. This server enables AI assistants to search, retrieve, and analyze academic papers seamlessly.
 
-## ✨ Features
+## Features
 
-- 🔍 **Paper Search** - Search arXiv by topic, author, or keywords with customizable result limits
-- 📄 **Paper Analysis** - Extract detailed information from specific research papers
-- 📚 **Resource Access** - Browse available topics and access organized paper collections
-- 🎯 **Smart Prompts** - Generate structured research prompts for comprehensive analysis
-- 🚀 **MCP Compatible** - Full Model Context Protocol implementation for seamless AI integration
-- ⚡ **Fast & Reliable** - Efficient arXiv API integration with robust error handling
-- 🛠️ **Easy Integration** - Simple setup for use with MCP clients and AI assistants
+- **Paper Search** - Search arXiv by topic, author, or keywords with customizable result limits
+- **Paper Analysis** - Extract detailed information from specific research papers
+- **Resource Access** - Browse available topics and access organized paper collections
+- **Smart Prompts** - Generate structured research prompts for comprehensive analysis
+- **MCP Compatible** - Full Model Context Protocol implementation for seamless AI integration
+- **Fast & Reliable** - Efficient arXiv API integration with robust error handling
+- **Easy Integration** - Simple setup for use with MCP clients and AI assistants
 
-## 🔗 Related Projects
+## Related Projects
 
 - [research-mcp-client](https://github.com/spalit2025/research-mcp-client) - A Claude AI chatbot that uses this server for intelligent research assistance
 
-## 📋 Prerequisites
+## Prerequisites
 
 - **Python 3.8+**
-- **Internet connection** for arXiv API access
+- **arxiv package** (>=2.1.0) - Official Python wrapper for arXiv.org
+- **Internet connection** - Required for arxiv package to access arXiv.org
 - **MCP client** (like the [research-mcp-client](https://github.com/spalit2025/research-mcp-client))
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone the Repository
 ```bash
@@ -46,7 +47,7 @@ pip install -r requirements.txt
 python research_server.py
 ```
 
-## 💡 Usage Examples
+## Usage Examples
 
 ### As MCP Server
 The server runs as a stdio-based MCP server, perfect for integration with AI assistants:
@@ -57,7 +58,7 @@ python research_server.py
 
 ### Available Tools
 
-#### 🔍 search_papers
+#### search_papers
 Search for academic papers on arXiv by topic.
 
 **Parameters:**
@@ -72,7 +73,7 @@ Search for academic papers on arXiv by topic.
 }
 ```
 
-#### 📄 extract_info
+#### extract_info
 Extract detailed information from a specific paper.
 
 **Parameters:**
@@ -87,14 +88,14 @@ Extract detailed information from a specific paper.
 
 ### Available Resources
 
-#### 📚 papers://folders
+#### papers://folders
 Lists all available topic folders with papers stored locally.
 
 **Returns:** Markdown-formatted list of available research topics
 
 **Usage:** Access this resource to see what topics have been previously searched and have papers available.
 
-#### 📖 papers://{topic}
+#### papers://{topic}
 Get detailed information about all papers for a specific topic.
 
 **Parameters:**
@@ -106,7 +107,7 @@ Get detailed information about all papers for a specific topic.
 
 ### Available Prompts
 
-#### 🎯 generate_search_prompt
+#### generate_search_prompt
 Generate a structured prompt for comprehensive academic research on a specific topic.
 
 **Parameters:**
@@ -127,7 +128,7 @@ Generate a structured prompt for comprehensive academic research on a specific t
 }
 ```
 
-## 🧪 Development & Testing
+## Development & Testing
 
 ### Test with MCP Inspector
 The MCP Inspector provides a web interface for testing your server:
@@ -160,7 +161,7 @@ npm install -g @modelcontextprotocol/inspector
 npx @modelcontextprotocol/inspector python research_server.py
 ```
 
-## 🏗️ Project Structure
+## Project Structure
 
 ```
 research-mcp-server/
@@ -172,17 +173,17 @@ research-mcp-server/
 └── README.md              # This file
 ```
 
-## 🔧 How It Works
+## How It Works
 
 1. **MCP Server** - Implements the Model Context Protocol for tool communication
-2. **arXiv Integration** - Uses the arXiv API to search and retrieve academic papers
+2. **arXiv Integration** - Uses the arxiv Python package to search and retrieve papers from arXiv.org
 3. **Tool Registration** - Exposes `search_papers` and `extract_info` as MCP tools
 4. **Resource Management** - Provides organized access to paper collections via resources
 5. **Prompt Generation** - Creates structured research prompts for systematic analysis
 6. **Data Processing** - Formats and structures paper information for AI consumption
 7. **Error Handling** - Robust error management for network and API issues
 
-## 🛠️ Configuration
+## Configuration
 
 ### Customizing Search Parameters
 You can modify the default search behavior in `research_server.py`:
@@ -206,17 +207,18 @@ server_params = StdioServerParameters(
 )
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Connection Issues
 - ✅ Ensure Python 3.8+ is installed and accessible
 - ✅ Verify all dependencies are installed correctly
 - ✅ Check that the server starts without errors
 
-### API Issues
-- ✅ Verify internet connection for arXiv API access
-- ✅ Check if arXiv is accessible from your network
-- ✅ Ensure no firewall blocking outbound connections
+### arXiv Package Issues
+- ✅ Verify arxiv package installation: `pip show arxiv`
+- ✅ Test package import: `python -c "import arxiv; print('arxiv package version:', arxiv.__version__)"`
+- ✅ Check arXiv.org accessibility in your browser
+- ✅ Ensure no firewall blocking connections to arXiv.org
 
 ### Search Problems
 - ✅ Try simpler search terms if no results found
@@ -235,7 +237,7 @@ python -c "import arxiv; print('arXiv accessible')"
 python research_server.py --help
 ```
 
-## 🔄 Development
+## Development
 
 ### Adding New Features
 1. Implement new tool functions in `research_server.py`
@@ -251,10 +253,10 @@ python research_server.py --help
 - **Error Handling** - Manage API errors and edge cases
 - **Data Formatting** - Structure responses for optimal AI consumption
 
-## 📦 Dependencies
+## Dependencies
 
 ### Production
-- **[arxiv](https://github.com/lukasschwab/arxiv.py)** >=2.1.0 - arXiv API client for paper search and retrieval
+- **[arxiv](https://github.com/lukasschwab/arxiv.py)** >=2.1.0 - Official Python package for arXiv.org integration
 - **[mcp](https://github.com/modelcontextprotocol/python-sdk)** >=1.0.0 - Model Context Protocol server implementation
 
 ### Development & Testing
@@ -265,11 +267,11 @@ python research_server.py --help
 
 *Note: Additional development tools like pytest, black, and flake8 are listed in requirements-dev.txt but not currently configured for this project.*
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
