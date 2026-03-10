@@ -13,16 +13,17 @@ mcp = FastMCP("research")
 def search_papers(topic: str, max_results: int = 5) -> List[str]:
     """
     Search for papers on arXiv based on a topic and store their information.
-    
+
     Args:
         topic: The topic to search for
-        max_results: Maximum number of results to retrieve (default: 5)
-        
+        max_results: Maximum number of results to retrieve (default: 5, max: 50)
+
     Returns:
         List of paper IDs found in the search
     """
-    
-    # Use arxiv to find the papers 
+    max_results = min(max_results, 50)
+
+    # Use arxiv to find the papers
     client = arxiv.Client()
 
     # Search for the most relevant articles matching the queried topic
@@ -33,9 +34,12 @@ def search_papers(topic: str, max_results: int = 5) -> List[str]:
     )
 
     papers = client.results(search)
-    
+
     # Create directory for this topic
     path = os.path.join(PAPER_DIR, topic.lower().replace(" ", "_"))
+    resolved = os.path.realpath(path)
+    if not resolved.startswith(os.path.realpath(PAPER_DIR)):
+        return ["Error: Invalid topic name"]
     os.makedirs(path, exist_ok=True)
     
     file_path = os.path.join(path, "papers_info.json")
@@ -122,7 +126,7 @@ def get_available_folders() -> str:
     if folders:
         for folder in folders:
             content += f"- {folder}\n"
-        content += f"\nUse @{folder} to access papers in that topic.\n"
+        content += f"\nUse @<topic_name> to access papers in a specific topic.\n"
     else:
         content += "No topics found.\n"
     
@@ -137,8 +141,12 @@ def get_topic_papers(topic: str) -> str:
         topic: The research topic to retrieve papers for
     """
     topic_dir = topic.lower().replace(" ", "_")
-    papers_file = os.path.join(PAPER_DIR, topic_dir, "papers_info.json")
-    
+    topic_path = os.path.join(PAPER_DIR, topic_dir)
+    resolved = os.path.realpath(topic_path)
+    if not resolved.startswith(os.path.realpath(PAPER_DIR)):
+        return f"# Error: Invalid topic name\n\nThe topic '{topic}' contains invalid characters."
+    papers_file = os.path.join(topic_path, "papers_info.json")
+
     if not os.path.exists(papers_file):
         return f"# No papers found for topic: {topic}\n\nTry searching for papers on this topic first."
     
