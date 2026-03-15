@@ -91,31 +91,29 @@ for future reference.
 ## How it works
 
 ```
-AI Assistant (Claude, etc.)
-    |
-    | MCP Protocol (stdio / JSON-RPC)
-    |
-Research MCP Server
-    |
-    +-- server.py
-    |     +-- search_papers(topic, max_results)     [tool]
-    |     +-- extract_info(paper_id)                 [tool]
-    |     +-- papers://folders                       [resource]
-    |     +-- papers://{topic}                       [resource]
-    |     +-- generate_search_prompt                 [prompt]
-    |
-    +-- storage.py
-    |     +-- PaperStorage.save_papers()
-    |     +-- PaperStorage.load_papers()
-    |     +-- PaperStorage.find_paper()
-    |     +-- PaperStorage.list_topics()
-    |     +-- PaperStorage.validate_topic_path()
-    |
-    +-- models.py
-    |     +-- Paper (dataclass)
-    |
-    +----> arXiv API (external, no auth required)
-    +----> papers/ (local file storage, organized by topic)
++-----------------------+
+|    AI Assistant        |
+|  (Claude Desktop,     |
+|   MCP Inspector)      |
++-----------+-----------+
+            |
+            | stdio (JSON-RPC)
+            |
++-----------v-----------+
+|  Research MCP Server   |
+|                        |
+|  Tools:                |        +------------------+
+|   search_papers -------+------->|   arXiv API      |
+|   extract_info         |        |   (external)     |
+|                        |        +------------------+
+|  Resources:            |
+|   papers://folders     |        +------------------+
+|   papers://{topic} ----+------->| papers/          |
+|                        |        |  {topic}/        |
+|  Prompts:              |        |   papers_info    |
+|   generate_search_     |        |   .json          |
+|   prompt               |        +------------------+
++------------------------+
 ```
 
 ## API reference
