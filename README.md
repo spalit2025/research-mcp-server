@@ -1,5 +1,9 @@
 # Research MCP Server
 
+[![CI](https://github.com/spalit2025/research-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/spalit2025/research-mcp-server/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 Researchers context-switch constantly between search tools and AI assistants.
 You find a paper in one tab, copy the title into another, ask questions in a
 third. The workflow is fragmented by design.
@@ -27,10 +31,10 @@ while exploring the protocol's three core primitives:
 # Clone and install
 git clone https://github.com/spalit2025/research-mcp-server.git
 cd research-mcp-server
-pip install -r requirements.txt
+pip install -e .
 
 # Run the server
-python research_server.py
+python -m research_mcp_server.server
 ```
 
 ### Connect to Claude Desktop
@@ -42,7 +46,7 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
   "mcpServers": {
     "research": {
       "command": "python",
-      "args": ["/path/to/research-mcp-server/research_server.py"]
+      "args": ["-m", "research_mcp_server.server"]
     }
   }
 }
@@ -53,28 +57,65 @@ Then ask Claude: *"Search for recent papers on transformer architectures"*
 ### Test with MCP Inspector
 
 ```bash
-npx @modelcontextprotocol/inspector python research_server.py
+npx @modelcontextprotocol/inspector python -m research_mcp_server.server
 # Opens web UI at http://localhost:6274
 ```
+
+## Example
+
+Ask your AI assistant to search for papers:
+
+> "Find recent papers on transformer architectures"
+
+The assistant calls `search_papers("transformer architectures")` and returns:
+
+```json
+["2401.12345v1", "2401.23456v1", "2401.34567v1"]
+```
+
+Then it can call `extract_info("2401.12345v1")` to get details:
+
+```json
+{
+  "title": "A Comprehensive Survey of Transformer Architectures",
+  "authors": ["Alice Smith", "Bob Jones"],
+  "summary": "This paper reviews the evolution of transformer architectures...",
+  "pdf_url": "https://arxiv.org/pdf/2401.12345v1",
+  "published": "2024-01-15"
+}
+```
+
+Papers are saved locally in `papers/transformer_architectures/papers_info.json`
+for future reference.
 
 ## How it works
 
 ```
 AI Assistant (Claude, etc.)
     |
-    | MCP Protocol (stdio)
+    | MCP Protocol (stdio / JSON-RPC)
     |
 Research MCP Server
-    ├── search_papers(topic, max_results)
-    |   └── arXiv API → results saved to papers/{topic}/papers_info.json
-    ├── extract_info(paper_id)
-    |   └── looks up saved paper metadata across all topics
-    ├── papers://folders (resource)
-    |   └── lists all previously searched topics
-    ├── papers://{topic} (resource)
-    |   └── returns full paper details for a topic
-    └── generate_search_prompt (prompt)
-        └── structured research workflow template
+    |
+    +-- server.py
+    |     +-- search_papers(topic, max_results)     [tool]
+    |     +-- extract_info(paper_id)                 [tool]
+    |     +-- papers://folders                       [resource]
+    |     +-- papers://{topic}                       [resource]
+    |     +-- generate_search_prompt                 [prompt]
+    |
+    +-- storage.py
+    |     +-- PaperStorage.save_papers()
+    |     +-- PaperStorage.load_papers()
+    |     +-- PaperStorage.find_paper()
+    |     +-- PaperStorage.list_topics()
+    |     +-- PaperStorage.validate_topic_path()
+    |
+    +-- models.py
+    |     +-- Paper (dataclass)
+    |
+    +----> arXiv API (external, no auth required)
+    +----> papers/ (local file storage, organized by topic)
 ```
 
 ## API reference
@@ -88,6 +129,8 @@ Research MCP Server
 ```
 
 Returns list of paper IDs. Results cached locally in `papers/` directory.
+Input validation: empty topics rejected, `max_results` clamped to 1-50,
+path traversal attempts blocked.
 
 **`extract_info`** -- Get metadata for a specific paper
 
@@ -112,24 +155,55 @@ Returns title, authors, summary, PDF URL, publication date.
 
 - **File-based persistence:** Papers are saved as JSON files organized by topic. Simple, inspectable, no database dependency. Good enough for a personal research tool.
 
-- **Path traversal protection:** Topic names are sanitized and validated against directory traversal attacks before any file operations.
+- **Path traversal protection:** Topic names are validated against directory traversal attacks before any file operations.
 
 - **Bounded results:** `max_results` is capped at 50 to prevent accidental API abuse.
+
+- **Graceful error handling:** Network failures, HTTP errors, and disk errors return structured error messages instead of crashing the server.
 
 ## Project structure
 
 ```
 research-mcp-server/
-├── research_server.py     # MCP server (tools, resources, prompts)
-├── requirements.txt       # arxiv, mcp dependencies
-├── papers/                # auto-generated paper storage by topic
-├── LICENSE                # MIT
-└── README.md
++-- src/research_mcp_server/
+|     +-- __init__.py          # Package version
+|     +-- server.py            # MCP server (tools, resources, prompts)
+|     +-- storage.py           # File-based paper persistence
+|     +-- models.py            # Paper dataclass
++-- tests/
+|     +-- conftest.py          # Shared fixtures
+|     +-- test_search.py       # search_papers tests
+|     +-- test_extract.py      # extract_info tests
+|     +-- test_resources.py    # Resource endpoint tests
+|     +-- test_storage.py      # PaperStorage tests
+|     +-- test_server.py       # Prompt generation tests
++-- .github/workflows/ci.yml   # CI: lint + test (Python 3.10-3.13)
++-- pyproject.toml              # Package config, dependencies, tool settings
++-- CONTRIBUTING.md
++-- TODOS.md
++-- LICENSE                     # MIT
++-- README.md
 ```
+
+## Development
+
+```bash
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run tests
+pytest -v
+
+# Lint and format
+ruff check .
+ruff format .
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## Requirements
 
-- Python 3.8+
+- Python 3.10+
 - Internet connection (arXiv API access)
 - An MCP-compatible client (Claude Desktop, MCP Inspector, or custom)
 
